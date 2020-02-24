@@ -9,6 +9,8 @@ implement Dijkstra's algorithm.
 """
 from __future__ import absolute_import, unicode_literals
 
+from collections import deque
+
 
 class BinaryMinHeap(object):
     """A simple implementation of a BinaryMinHeap"""
@@ -60,3 +62,21 @@ class BinaryMinHeap(object):
 
         # return the minimum
         return minimum
+
+
+class Queue(object):
+    """Simple FIFO data structure"""
+    def __init__(self, queue):
+        super(Queue, self).__init__()
+        self.queue = deque(queue)
+
+    def add(self, e):
+        """Add element to the last position in the FIFO"""
+        self.queue.append(e)
+
+    def pop(self):
+        """Pop the first element in the FIFO"""
+        return self.queue.popleft()
+
+    def __len__(self):
+        return len(self.queue)

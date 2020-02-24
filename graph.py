@@ -8,21 +8,26 @@ A program that implements dijkstras algorithm for shortest path.
 """
 from __future__ import absolute_import, unicode_literals
 
-from helpers import BinaryMinHeap
+from enum import Enum
+
+from helpers import BinaryMinHeap, Queue
 
 
 class Edge(object):
     """Implements an abstractio to graph's Edge"""
-    def __init__(self, neighboor, distance):
+    def __init__(self, source, neighboor, distance):
         super(Edge).__init__()
+        self.source = source
         self.neighboor = neighboor
         self.distance = distance
 
     def __repr__(self):
         return (
-            'Edge(neighboor={}, '
+            'Edge(source={} '
+            'neighboor={}, '
             'distance={})'
         ).format(
+            self.source.label,
             self.neighboor.label,
             self.distance,
         )
@@ -30,6 +35,12 @@ class Edge(object):
 
 class Vertex(object):
     """Implements an abstraction to graph's Vertex"""
+    class Color(Enum):
+        """For First-Search purpuses"""
+        WHITE = 0
+        GREY = 1
+        BLACK = 2
+
     def __init__(self, label, distance=float("inf")):
         super(Vertex).__init__()
         self.label = label
@@ -37,6 +48,7 @@ class Vertex(object):
         self.edges = []
         self.previous = None
         self.visited = False
+        self.color = Vertex.Color.WHITE
 
     def __repr__(self):
         return (
@@ -44,18 +56,20 @@ class Vertex(object):
             'distance={}, '
             'edges={}, '
             'previous={}, '
-            'visited={})'
+            'visited={}, '
+            'color={})'
         ).format(
             self.label,
             self.distance,
             len(self.edges),
             self.previous.label if self.previous else None,
             self.visited,
+            self.color,
         )
 
     def add_edge(self, vertex, dist):
         """Add edges to the Vertex"""
-        self.edges.append(Edge(vertex, dist))
+        self.edges.append(Edge(self, vertex, dist))
 
     @property
     def neighboors(self):
@@ -109,6 +123,12 @@ class Graph(object):
 
                 if not digraph:
                     v_to.add_edge(v_from, weight)
+
+    def reset(self):
+        """Reset the graph to run dijkstra from other start nodes"""
+        for vertex in self.vertexes:
+            vertex.previous = None
+            vertex.distance = float('inf')
 
     def dijkstra(self, start, end=None):
         """
@@ -188,8 +208,30 @@ class Graph(object):
             'path': list(reversed(path)),
         }
 
-    def reset(self):
-        """Reset the graph to run dijkstra from other start nodes"""
-        for vertex in self.vertexes:
-            vertex.previous = None
-            vertex.distance = float('inf')
+    def breadth_first_search(self, start):
+        """
+        Run a Breadth First Search algorithm on the given graph begining in the
+        start node.
+
+        :param start: Vertex from which the search starts
+        """
+        start.color = Vertex.Color.GREY
+        grey_nodes = Queue([start])
+        search_tree = []
+
+        while len(grey_nodes) > 0:
+            node = grey_nodes.pop()
+
+            for edge in node.edges:
+                neighboor = edge.neighboor
+                # add edge to search tree and color the node
+                if neighboor.color == Vertex.Color.WHITE:
+                    search_tree.append(edge)
+                    neighboor.color = Vertex.Color.GREY
+                    grey_nodes.add(neighboor)
+
+
+            # paint the node black
+            node.color = Vertex.Color.BLACK
+
+        return search_tree
