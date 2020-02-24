@@ -186,3 +186,8 @@ class Graph(object):
             'distance': end.distance,
             'path': list(reversed(path)),
         }
+
+    def reset(self):
+        for v in self.vertexes:
+            v.previous = None
+            v.distance = float('inf')
