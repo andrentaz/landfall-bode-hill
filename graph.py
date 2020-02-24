@@ -109,7 +109,7 @@ class Graph(object):
 
                     continue
 
-                # from the second row on the lines are structured as:
+                # from the second row in the lines are structured as:
                 # 'from to weight'
                 line = row.split(' ')
                 from_idx = int(line[0])
@@ -129,6 +129,8 @@ class Graph(object):
         for vertex in self.vertexes:
             vertex.previous = None
             vertex.distance = float('inf')
+            vertex.visited = False
+            vertex.color = Vertex.Color.WHITE
 
     def dijkstra(self, start, end=None):
         """
@@ -142,7 +144,7 @@ class Graph(object):
         :param end: end node
         """
 
-        # setup vertex heap based on distance
+        # setup vertex heap based in distance
         start.distance = 0
         vertex_heap = BinaryMinHeap(self.vertexes)
         vertex_heap.build_min_heap()
@@ -172,11 +174,11 @@ class Graph(object):
     def path(self, start, end, run_dijkstra=False):
         """
         Get the shortest path from start to end after the dijkstra algorithm is
-        runned on the graph.
+        runned in the graph.
 
         :param start: starting node
         :param end: end node
-        :param run_dijkstra: if true will run a complete dijkstra on the graph
+        :param run_dijkstra: if true will run a complete dijkstra in the graph
         previously to defining the shortest path between start and end.
 
         :return path: dict with path from start to end and total distance
@@ -210,14 +212,15 @@ class Graph(object):
 
     def breadth_first_search(self, start):
         """
-        Run a Breadth First Search algorithm on the given graph begining in the
+        Run a Breadth First Search algorithm in the given graph begining in the
         start node.
 
         :param start: Vertex from which the search starts
+        :return search_tree: list of Edges from the search tree
         """
         start.color = Vertex.Color.GREY
-        grey_nodes = Queue([start])
         search_tree = []
+        grey_nodes = Queue([start])
 
         while len(grey_nodes) > 0:
             node = grey_nodes.pop()
@@ -234,4 +237,27 @@ class Graph(object):
             # paint the node black
             node.color = Vertex.Color.BLACK
 
+        return search_tree
+
+    def depth_first_search(self, start, search_tree=[]):
+        """
+        Run a Depth First Search algorithm in the given graph begining in the
+        start node.
+
+        :param start: Vertex from which the search starts
+        :return search_tree: list of Edges from the search tree
+        """
+        start.color = Vertex.Color.GREY
+
+        for edge in start.edges:
+            neighboor = edge.neighboor
+
+            if neighboor.color == Vertex.Color.WHITE:
+                search_tree.append(edge)
+                self.depth_first_search(
+                    start=neighboor,
+                    search_tree=search_tree,
+                )
+
+        start.color = Vertex.Color.BLACK
         return search_tree
