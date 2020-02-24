@@ -36,18 +36,21 @@ class Vertex(object):
         self.distance = distance
         self.edges = []
         self.previous = None
+        self.visited = False
 
     def __repr__(self):
         return (
             'Vertex(label={}, '
             'distance={}, '
             'edges={}, '
-            'previous={})'
+            'previous={}, '
+            'visited={})'
         ).format(
             self.label,
             self.distance,
             len(self.edges),
             self.previous.label if self.previous else None,
+            self.visited,
         )
 
     def add_edge(self, vertex, dist):
@@ -138,6 +141,9 @@ class Graph(object):
             # loop over the node edges
             for edge in node.edges:
                 neighboor = edge.neighboor
+                if neighboor.visited:
+                    continue
+
                 path_distance = node.distance + edge.distance
 
                 if path_distance < neighboor.distance:
@@ -145,6 +151,7 @@ class Graph(object):
                     neighboor.previous = node
 
             # check if the end node is the one popped and the algorithm can end
+            node.visited = True
             if end and node == end:
                 break
 

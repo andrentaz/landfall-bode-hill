@@ -57,8 +57,7 @@ if __name__ == '__main__':
     parser.add_argument('start',
                         help='starting node index',
                         type=int)
-    parser.add_argument('-e',
-                        '--end',
+    parser.add_argument('end',
                         help='ending node index',
                         type=int)
     args = parser.parse_args()
