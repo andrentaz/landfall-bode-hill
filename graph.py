@@ -1,5 +1,4 @@
 # -*- encoding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
 """
 A program that implements dijkstras algorithm for shortest path
 
@@ -7,8 +6,10 @@ A program that implements dijkstras algorithm for shortest path
 :email: andrentaz@gmail.com
 :github: https://github.com/andrentaz
 """
+from __future__ import absolute_import, unicode_literals
 
 import sys
+
 
 class Edge:
     """Implements an abstractio to graph's Edge"""
