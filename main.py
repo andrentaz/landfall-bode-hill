@@ -44,7 +44,6 @@ def main(filename, start, end):
     print()
 
 
-
 if __name__ == '__main__':
     # handle script arguments
     parser = argparse.ArgumentParser(
