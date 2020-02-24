@@ -24,6 +24,7 @@ class BinaryMinHeap(object):
         ).format(len(self.heap), self.heap[0], self.heap)
 
     def min_heapify(self, idx):
+        """Heapify a portion of the array"""
         # total array size
         length = len(self.heap) - 1
 
@@ -43,11 +44,13 @@ class BinaryMinHeap(object):
             self.min_heapify(smallest)
 
     def build_min_heap(self):
+        """Create a heap from the object's array heap"""
         array = self.heap
         for i in reversed(range(len(array)//2)):
             self.min_heapify(i)
 
     def extract_min(self):
+        """Get minimum element preserving the heap property"""
         # change the first and last elements
         self.heap[0], self.heap[-1] = self.heap[-1], self.heap[0]
         minimum = self.heap.pop()
