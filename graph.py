@@ -62,8 +62,6 @@ class Graph:
     def create_from_file(self, number_of_vertexes, filename):
         """Create a graph from a file with a matrix of distances"""
 
-        import ipdb
-        ipdb.set_trace()
         # initialize the vertex list
         for i in range(number_of_vertexes):
             self.vertexes.append(Vertex(str(i)))
