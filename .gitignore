@@ -3,3 +3,6 @@
 
 # example files
 *.graph
+
+# venv
+shortest-path/*

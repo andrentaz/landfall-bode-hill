@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 """
-A program that implements dijkstras algorithm for shortest path
+A program that implements dijkstras algorithm for shortest path.
 
 :author: Andre Filliettaz
 :email: andrentaz@gmail.com
@@ -8,12 +8,11 @@ A program that implements dijkstras algorithm for shortest path
 """
 from __future__ import absolute_import, unicode_literals
 
-import sys
 
-
-class Edge:
+class Edge(object):
     """Implements an abstractio to graph's Edge"""
     def __init__(self, neighboor, distance):
+        super(Edge).__init__()
         self.neighboor = neighboor
         self.distance = distance
 
@@ -27,9 +26,10 @@ class Edge:
         )
 
 
-class Vertex:
+class Vertex(object):
     """Implements an abstraction to graph's Vertex"""
-    def __init__(self, label, distance=sys.maxint):
+    def __init__(self, label, distance=float("inf")):
+        super(Vertex).__init__()
         self.label = label
         self.distance = distance
         self.edges = []
@@ -49,12 +49,26 @@ class Vertex:
         )
 
     def add_edge(self, vertex, dist):
+        """Add edges to the Vertex"""
         self.edges.append(Edge(vertex, dist))
 
+    @property
+    def neighboors(self):
+        """Give a list of Vertex neighboors"""
+        return [
+            e.neighboor
+            for e in self.edges
+        ]
 
-class Graph:
+    def __gt__(self, other):
+        """Overload the greater than operator"""
+        return self.distance > other.distance
+
+
+class Graph(object):
     """Implements an abstraction to Graphs using a list of vertexes"""
     def __init__(self):
+        super(Graph).__init__()
         self.vertexes = []
 
     def __repr__(self):
@@ -68,12 +82,12 @@ class Graph:
             self.vertexes.append(Vertex(str(i)))
 
         # read matrix of distances from file
-        with open(filename, 'r') as file:
-            for from_idx, row in enumerate(file):
+        with open(filename, 'r') as distance_matrix:
+            for from_idx, row in enumerate(distance_matrix):
                 for to_idx, column in enumerate(row.split(' ')):
                     dist = int(column.rstrip('\n'))
 
-                    if not dist > 0:
+                    if dist <= 0:
                         continue
 
                     v_from = self.vertexes[from_idx]
