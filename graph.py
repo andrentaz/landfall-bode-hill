@@ -84,9 +84,9 @@ class Graph(object):
 
         # read matrix of distances from file
         with open(filename, 'r') as adjacency_list:
-            for from_idx, row in enumerate(adjacency_list):
+            for row_idx, row in enumerate(adjacency_list):
                 # the first row contains the number of vertexes
-                if from_idx == 0:
+                if row_idx == 0:
                     number_of_vertexes = int(row)
 
                     # initialize the vertex list
@@ -95,26 +95,20 @@ class Graph(object):
 
                     continue
 
-                # from the second row is structured as
-                # r'vertex [neighboor,weight]+'
+                # from the second row on the lines are structured as:
+                # 'from to weight'
                 line = row.split(' ')
-                to_idx = int(row[0])
-                edges = [
-                    tuple(edge.split(','))
-                    for edge in line[1:]
-                ]
+                from_idx = int(line[0])
+                to_idx = int(line[1])
+                weight = int(line[2])
 
-                for edge in edges:
-                    from_idx = int(edge[0])
-                    dist = int(edge[1])
+                v_from = self.vertexes[from_idx]
+                v_to = self.vertexes[to_idx]
 
-                    v_from = self.vertexes[from_idx]
-                    v_to = self.vertexes[to_idx]
+                v_from.add_edge(v_to, weight)
 
-                    v_from.add_edge(v_to, dist)
-
-                    if not digraph:
-                        v_to.add_edge(v_from, dist)
+                if not digraph:
+                    v_to.add_edge(v_from, weight)
 
     def dijkstra(self, start, end=None):
         """
