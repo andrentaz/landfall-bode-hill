@@ -76,26 +76,42 @@ class Graph(object):
     def __repr__(self):
         return ('Graph(vertexes={})').format(len(self.vertexes))
 
-    def create_from_file(self, number_of_vertexes, filename):
+    def create_from_file(self, filename, digraph=False):
         """Create a graph from a file with a matrix of distances"""
 
-        # initialize the vertex list
-        for i in range(number_of_vertexes):
-            self.vertexes.append(Vertex(str(i)))
-
         # read matrix of distances from file
-        with open(filename, 'r') as distance_matrix:
-            for from_idx, row in enumerate(distance_matrix):
-                for to_idx, column in enumerate(row.split(' ')):
-                    dist = int(column.rstrip('\n'))
+        with open(filename, 'r') as adjacency_list:
+            for from_idx, row in enumerate(adjacency_list):
+                # the first row contains the number of vertexes
+                if from_idx == 0:
+                    number_of_vertexes = int(row)
 
-                    if dist <= 0:
-                        continue
+                    # initialize the vertex list
+                    for i in range(number_of_vertexes):
+                        self.vertexes.append(Vertex(str(i)))
+
+                    continue
+
+                # from the second row is structured as
+                # r'vertex [neighboor,weight]+'
+                line = row.split(' ')
+                to_idx = int(row[0])
+                edges = [
+                    tuple(edge.split(','))
+                    for edge in line[1:]
+                ]
+
+                for edge in edges:
+                    from_idx = int(edge[0])
+                    dist = int(edge[1])
 
                     v_from = self.vertexes[from_idx]
                     v_to = self.vertexes[to_idx]
 
                     v_from.add_edge(v_to, dist)
+
+                    if not digraph:
+                        v_to.add_edge(v_from, dist)
 
     def dijkstra(self, start, end=None):
         """
