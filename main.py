@@ -12,12 +12,12 @@ import argparse
 from graph import Graph
 
 
-def main(filename, start, **kwargs):
+def main(filename, start, end):
+    """Get the shortest path from start to end nodes in a given graph"""
     v_start = None
     v_end = None
     graph = Graph()
 
-    end = kwargs.get('end', None)
 
     try:
         graph.create_from_file(filename)
@@ -28,9 +28,7 @@ def main(filename, start, **kwargs):
 
     try:
         v_start = graph.vertexes[start]
-
-        if end:
-            v_end = graph.vertexes[end]
+        v_end = graph.vertexes[end]
     except IndexError:
         print('Non existing start or end: ({}, {})'.format(start, end))
         return

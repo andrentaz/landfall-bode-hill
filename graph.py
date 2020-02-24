@@ -195,6 +195,7 @@ class Graph(object):
         }
 
     def reset(self):
-        for v in self.vertexes:
-            v.previous = None
-            v.distance = float('inf')
+        """Reset the graph to run dijkstra from other start nodes"""
+        for vertex in self.vertexes:
+            vertex.previous = None
+            vertex.distance = float('inf')
