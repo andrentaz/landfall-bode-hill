@@ -8,6 +8,8 @@ A program that implements dijkstras algorithm for shortest path.
 """
 from __future__ import absolute_import, unicode_literals
 
+from helpers import BinaryMinHeap
+
 
 class Edge(object):
     """Implements an abstractio to graph's Edge"""
@@ -33,19 +35,19 @@ class Vertex(object):
         self.label = label
         self.distance = distance
         self.edges = []
-        self.visited = False
+        self.previous = None
 
     def __repr__(self):
         return (
             'Vertex(label={}, '
             'distance={}, '
             'edges={}, '
-            'visited={})'
+            'previous={})'
         ).format(
             self.label,
             self.distance,
             len(self.edges),
-            self.visited,
+            self.previous.label if self.previous else None,
         )
 
     def add_edge(self, vertex, dist):
@@ -94,3 +96,77 @@ class Graph(object):
                     v_to = self.vertexes[to_idx]
 
                     v_from.add_edge(v_to, dist)
+
+    def dijkstra(self, start, end=None):
+        """
+        Run the dijkstra algorithm to find the shortest path from start node to
+        end node using a BinaryMinHeap to keep the priority queue efficient.
+
+        If no end node is passed, this algorithm will find the min distance of
+        every node from the start.
+
+        :param start: starting node
+        :param end: end node
+        """
+
+        # setup vertex heap based on distance
+        start.distance = 0
+        vertex_heap = BinaryMinHeap(self.vertexes)
+        vertex_heap.build_min_heap()
+
+        # run the loop checking for edges
+        while vertex_heap.heap:
+            # get the next in the priority queue
+            node = vertex_heap.extract_min()
+
+            # loop over the node edges
+            for edge in node.edges:
+                neighboor = edge.neighboor
+                path_distance = node.distance + edge.distance
+
+                if path_distance < neighboor.distance:
+                    neighboor.distance = path_distance
+                    neighboor.previous = node
+
+            # check if the end node is the one popped and the algorithm can end
+            if end and node == end:
+                break
+
+    def path(self, start, end, run_dijkstra=False):
+        """
+        Get the shortest path from start to end after the dijkstra algorithm is
+        runned on the graph.
+
+        :param start: starting node
+        :param end: end node
+        :param run_dijkstra: if true will run a complete dijkstra on the graph
+        previously to defining the shortest path between start and end.
+
+        :return path: dict with path from start to end and total distance
+        """
+        path = []
+
+        if not start.distance == 0:
+            if not run_dijkstra:
+                return None
+            self.dijkstra(start)
+
+        # case we have a disconnected graph
+        if end.distance == float('inf'):
+            return {
+                'distance': end.distance,
+                'path': path,
+            }
+
+        # get the reversed path
+        node = end
+        while node != start:
+            path.append(node)
+            node = node.previous
+
+        path.append(start)
+
+        return {
+            'distance': end.distance,
+            'path': list(reversed(path)),
+        }

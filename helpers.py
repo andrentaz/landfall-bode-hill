@@ -48,8 +48,12 @@ class BinaryMinHeap(object):
             self.min_heapify(i)
 
     def extract_min(self):
+        # change the first and last elements
         self.heap[0], self.heap[-1] = self.heap[-1], self.heap[0]
         minimum = self.heap.pop()
+
+        # restores the heap property
         self.build_min_heap()
 
+        # return the minimum
         return minimum
