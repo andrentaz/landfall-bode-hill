@@ -22,7 +22,7 @@ def main(filename, start, end):
     try:
         graph.create_from_file(filename)
     except IndexError:
-        print('Something wrong with the adjacency matrix: {}'.format(filename))
+        print('Something wrong with the adjacency list: {}'.format(filename))
         print('Tried to create edge between non existing vertexes')
         return
 
