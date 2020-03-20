@@ -1,2 +1,2 @@
 # landfall-bode-hill
-A simple graph implementation and searches in Python
+A simple data structure implementations in Python
