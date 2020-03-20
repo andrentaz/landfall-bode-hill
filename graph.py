@@ -132,69 +132,17 @@ class Graph(object):
             vertex.visited = False
             vertex.color = Vertex.Color.WHITE
 
-    def dijkstra(self, start, end=None):
-        """
-        Run the dijkstra algorithm to find the shortest path from start node to
-        end node using a BinaryMinHeap to keep the priority queue efficient.
-
-        If no end node is passed, this algorithm will find the min distance of
-        every node from the start.
-
-        :param start: starting node
-        :param end: end node
-        """
-
-        # setup vertex heap based in distance
-        start.distance = 0
-        vertexes = self.vertexes[:]
-        vertex_heap = BinaryMinHeap(vertexes)
-        vertex_heap.build_min_heap()
-
-        # run the loop checking for edges
-        while vertex_heap.heap:
-            # get the next in the priority queue
-            node = vertex_heap.extract_min()
-            changed = False
-
-            # loop over the node edges
-            for edge in node.edges:
-                neighboor = edge.neighboor
-                if neighboor.visited:
-                    continue
-
-                path_distance = node.distance + edge.distance
-
-                if path_distance < neighboor.distance:
-                    neighboor.distance = path_distance
-                    neighboor.previous = node
-                    changed = True
-
-            # check if the end node is the one popped and the algorithm can end
-            node.visited = True
-            if changed:
-                vertex_heap.build_min_heap()
-
-            if end and node == end:
-                break
-
-    def path(self, start, end, run_dijkstra=False):
+    def path(self, start, end):
         """
         Get the shortest path from start to end after the dijkstra algorithm is
         runned in the graph.
 
         :param start: starting node
         :param end: end node
-        :param run_dijkstra: if true will run a complete dijkstra in the graph
-        previously to defining the shortest path between start and end.
 
         :return path: dict with path from start to end and total distance
         """
         path = []
-
-        if not start.distance == 0:
-            if not run_dijkstra:
-                return None
-            self.dijkstra(start)
 
         # case we have a disconnected graph
         if end.distance == float('inf'):
@@ -216,14 +164,58 @@ class Graph(object):
             'path': list(reversed(path)),
         }
 
-    def breadth_first_search(self, start):
+    def dijkstra(self, start, end=None):
+        """
+        Run the dijkstra algorithm to find the shortest path from start node to
+        end node using a BinaryMinHeap to keep the priority queue efficient.
+
+        If no end node is passed, this algorithm will find the min distance of
+        every node from the start.
+
+        :param start: starting node
+        :param end: end node
+        """
+
+        # setup vertex heap based in distance
+        start.distance = 0
+        vertex_heap = BinaryMinHeap()
+        vertex_heap.add_to_heap(start)
+
+        # run the loop checking for edges
+        while vertex_heap.heap:
+            # get the next in the priority queue
+            node = vertex_heap.extract_min()
+
+            # loop over the node edges
+            for edge in node.edges:
+                neighboor = edge.neighboor
+                if neighboor.visited:
+                    continue
+
+                path_distance = node.distance + edge.distance
+
+                if path_distance < neighboor.distance:
+                    if neighboor.distance == float('inf'):
+                        vertex_heap.add_to_heap(neighboor)
+
+                    neighboor.distance = path_distance
+                    neighboor.previous = node
+
+            # check if the end node is the one popped and the algorithm can end
+            node.visited = True
+
+            if end and node == end:
+                break
+
+    def breadth_first_search(self, start, end=None):
         """
         Run a Breadth First Search algorithm in the given graph begining in the
         start node.
 
         :param start: Vertex from which the search starts
-        :return search_tree: list of Edges from the search tree
+        :param end: Vertex which the path should end
         """
+        start.distance = 0
         start.color = Vertex.Color.GREY
         search_tree = []
         grey_nodes = Queue([start])
@@ -233,37 +225,43 @@ class Graph(object):
 
             for edge in node.edges:
                 neighboor = edge.neighboor
+
                 # add edge to search tree and color the node
                 if neighboor.color == Vertex.Color.WHITE:
                     search_tree.append(edge)
                     neighboor.color = Vertex.Color.GREY
+                    neighboor.previous = node
+                    neighboor.distance = node.distance + edge.distance
                     grey_nodes.add(neighboor)
 
+            if end and end.color == Vertex.Color.GREY:
+                break
 
             # paint the node black
             node.color = Vertex.Color.BLACK
 
-        return search_tree
-
-    def depth_first_search(self, start, search_tree=[]):
+    def depth_first_search(self, start, end=None):
         """
         Run a Depth First Search algorithm in the given graph begining in the
         start node.
 
         :param start: Vertex from which the search starts
-        :return search_tree: list of Edges from the search tree
+        :param end: Vertex which the path should end
         """
-        start.color = Vertex.Color.GREY
+        start.distance = 0
+        stack = [start]
 
-        for edge in start.edges:
-            neighboor = edge.neighboor
+        while stack:
+            node = stack.pop()
+            node.color = Vertex.Color.GREY
 
-            if neighboor.color == Vertex.Color.WHITE:
-                search_tree.append(edge)
-                self.depth_first_search(
-                    start=neighboor,
-                    search_tree=search_tree,
-                )
+            for edge in node.edges:
+                neighboor = edge.neighboor
 
-        start.color = Vertex.Color.BLACK
-        return search_tree
+                if neighboor.color == Vertex.Color.WHITE:
+                    neighboor.previous = edge.source
+                    neighboor.distance = node.distance + edge.distance
+                    stack.append(neighboor)
+
+                    if end == neighboor:
+                        return
