@@ -2,7 +2,7 @@
 
 
 class Tree(object):
-    """An abstraction to the Balanced Tree"""
+    """An abstraction of Tree data structure"""
 
     class DuplicatedKeyError(Exception):
         """Trees don't allow duplicated keys"""
@@ -17,7 +17,7 @@ class Tree(object):
         self.parent = parent
 
     def __repr__(self):
-        return(
+        return (
             'Tree(key={}, '
             'left={}, '
             'right={}, '
