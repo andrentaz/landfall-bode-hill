@@ -69,11 +69,45 @@ class AVLTree(Tree):
         return self.left_rotate()
 
     def rebalance(self):
-        left_height = self.left.calculate_height() + 1 if self.left else 0
-        right_height = self.right.calculate_height() + 1 if self.right else 0
+        l_height = self.left.calculate_height() + 1 if self.left else 0
+        r_height = self.right.calculate_height() + 1 if self.right else 0
 
-        if abs(left_height - right_height) > 1:
+        if abs(l_height - r_height) > 1:
             print('unbalanced ' + str(self.key))
+
+            if l_height > r_height:
+                temp = self.left
+
+                pl_height = (
+                    temp.left.calculate_height() + 1
+                ) if temp.left else 0
+
+                pr_height = (
+                    temp.right.calculate_height() + 1
+                ) if temp.right else 0
+
+                if pl_height > pr_height:
+                    return self.right_rotate()
+                else:
+                    return self.left_right_rotate()
+            else:
+                temp = self.right
+
+                pl_height = (
+                    temp.left.calculate_height() + 1
+                ) if temp.left else 0
+
+                pr_height = (
+                    temp.right.calculate_height() + 1
+                ) if temp.right else 0
+
+                if pl_height > pr_height:
+                    return self.right_left_rotate()
+                else:
+                    return self.left_rotate()
+
+        return self
+
 
     def insert(self, key):
         """Implements AVLTree insertion recursively"""
@@ -87,10 +121,7 @@ class AVLTree(Tree):
                 return self.left
             else:
                 self.left.insert(key)
-
-                # rebalance stuff
-                self.rebalance()
-                return self.left
+                return self.rebalance()
 
         if self.key < key:
             if not self.right:
@@ -98,10 +129,7 @@ class AVLTree(Tree):
                 return self.right
             else:
                 self.right.insert(key)
-
-                # rebalance stuff
-                self.rebalance()
-                return self.right
+                return self.rebalance()
 
         raise DuplicatedKeyError(
             'DuplicatedKeyError: {} is already in the tree'.format(key)
