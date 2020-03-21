@@ -100,6 +100,7 @@ class AVLTree(Tree):
         Rebalance uses the 4 basic rotations to balance a tree and preserve the
         AVL Tree balance properties.
         Example:
+
             8
            /        6
           6    =>  / \
