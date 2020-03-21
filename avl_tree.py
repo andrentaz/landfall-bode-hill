@@ -52,6 +52,9 @@ class AVLTree(object):
 
         return self.get_height(root.left) - self.get_height(root.right)
 
+    # --------------------------------------------------------------------------
+    # AVL Tree Rotation --------------------------------------------------------
+    # --------------------------------------------------------------------------
     def left_rotate(self, root):
         """
         Implements a left rotation in the tree.
@@ -96,6 +99,26 @@ class AVLTree(object):
         root.right = self.right_rotate(root.right)
         return self.left_rotate(root)
 
+    # --------------------------------------------------------------------------
+    # AVL Utility Methods ------------------------------------------------------
+    # --------------------------------------------------------------------------
+    def search(self, root, key):
+        """
+        Implements AVLTree search recursively.
+
+        :param root: root tree to search
+        :param key: value to be searched
+        :return: tree if found or None otherwise
+        """
+        if root is None:
+            return None
+        elif root.key > key:
+            return self.search(root.left, key)
+        elif root.key < key:
+            return self.search(root.right, key)
+        else:
+            return root
+
     def insert(self, root, key):
         """
         Implements AVLTree insertion recursively. The insertion preserves the
@@ -112,6 +135,7 @@ class AVLTree(object):
         Specialy to smaller trees, the insertion can cause an unbalanced tree,
         so after every the insertion the return always rebalance the tree.
 
+        :param root: tree to be inserted
         :param key: Key to be inserted in the tree
         :return self: New tree root
         """
@@ -150,6 +174,11 @@ class AVLTree(object):
         return root
 
     def inorder(self, root):
+        """
+        Prints the inorder path in the tree.
+
+        :param root: tree to be printed
+        """
         if root is None:
             return
 
