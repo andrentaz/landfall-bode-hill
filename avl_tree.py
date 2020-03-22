@@ -65,6 +65,16 @@ class AVLTree(object):
         root.right = temp.left
         temp.left = root
 
+        root.height = max(
+            self.get_height(root.left),
+            self.get_height(root.right),
+        ) + 1
+
+        temp.height = max(
+            self.get_height(temp.left),
+            self.get_height(temp.right),
+        ) + 1
+
         return temp
 
     def right_rotate(self, root):
@@ -76,6 +86,16 @@ class AVLTree(object):
         temp = root.left
         root.left = temp.right
         temp.right = root
+
+        root.height = max(
+            self.get_height(root.left),
+            self.get_height(root.right),
+        ) + 1
+
+        temp.height = max(
+            self.get_height(temp.left),
+            self.get_height(temp.right),
+        ) + 1
 
         return temp
 
