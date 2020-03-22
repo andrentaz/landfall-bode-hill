@@ -52,6 +52,12 @@ class AVLTree(object):
 
         return self.get_height(root.left) - self.get_height(root.right)
 
+    def get_min(self, root):
+        if root.left is None:
+            return root
+
+        return self.get_min(root.left)
+
     # --------------------------------------------------------------------------
     # AVL Tree Rotation --------------------------------------------------------
     # --------------------------------------------------------------------------
@@ -177,6 +183,61 @@ class AVLTree(object):
 
         balance = self.get_balance(root)
 
+        if balance > 1 and key < root.left.key:
+            # left - left unbalance
+            return self.right_rotate(root)
+        elif balance > 1 and key > root.left.key:
+            # left - right unbalance
+            return self.left_right_rotate(root)
+        elif balance < -1 and key > root.right.key:
+            # right - right unbalance
+            return self.left_rotate(root)
+        elif balance < -1 and key < root.right.key:
+            # right - left unbalance
+            return self.right_left_rotate(root)
+
+        return root
+
+    def remove(self, root, key):
+        """
+        Implements AVLTree removal recursively.
+        This is by far the hardest operation in an AVL Tree. The tree has to
+        perform a removal and rebalance just after that.
+
+        :param root: the tree to remove from
+        :param key: the key to be removed
+        :return: the final tree without the key
+        """
+        if root is None:
+            print('Key {} not found in the tree'.format(key))
+            return root
+        elif root.key > key:
+            root.left = self.remove(root.left, key)
+        elif root.key < key:
+            root.right = self.remove(root.right, key)
+        else:
+            if root.left is None:
+                temp = root.right
+                del root
+                root = temp
+            elif root.right is None:
+                temp = root.left
+                del root
+                root = temp
+            else:
+                temp = self.get_min(root.right)
+                root.key = temp.key
+                root.right = self.remove(root.right, temp.key)
+
+        if root is None:
+            return root
+
+        root.height = max(
+            self.get_height(root.left),
+            self.get_height(root.right),
+        ) + 1
+
+        balance = self.get_balance(root)
 
         if balance > 1 and key < root.left.key:
             # left - left unbalance
